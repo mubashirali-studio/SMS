@@ -25,7 +25,7 @@ if (!$teacher) {
 <div class="card shadow-sm">
     <div class="card-header bg-primary text-white d-flex align-items-center gap-3 py-3">
         <?php if (!empty($teacher['photo'])): ?>
-            <img src="<?= htmlspecialchars($teacher['photo']) ?>" alt="Teacher Photo" class="rounded-circle object-fit-cover" style="width: 60px; height: 60px;">
+            <img src="/Website/SMS/assets/uploads/teachers/<?= htmlspecialchars($teacher['photo']) ?>" alt="Teacher Photo" class="rounded-circle object-fit-cover" style="width: 60px; height: 60px;">
         <?php else: ?>
             <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">
                 <?= strtoupper(substr($teacher['name'], 0, 1)) ?>

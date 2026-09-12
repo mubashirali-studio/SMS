@@ -1,5 +1,5 @@
 <?php
-include(__DIR__ . '/../../database/db.php');
+include('./database/db.php');
 
 $id = $_GET['id'] ?? null;
 
@@ -36,9 +36,16 @@ if (!empty($student['section_id'])) {
 
 <div class="card shadow-sm">
     <div class="card-header bg-primary text-white d-flex align-items-center gap-3 py-3">
-        <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">
-            <?= strtoupper(substr($student['name'], 0, 1)) ?>
-        </div>
+
+        <?php if (!empty($student['pic'])): ?>
+            <img src="/Website/SMS/assets/uploads/students/<?= htmlspecialchars($student['pic']) ?>" 
+                 alt="Student Photo" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
+        <?php else: ?>
+            <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">
+                <?= strtoupper(substr($student['name'], 0, 1)) ?>
+            </div>
+        <?php endif; ?>
+
         <div>
             <h4 class="mb-0"><?= htmlspecialchars($student['name']) ?></h4>
             <small>Class <?= htmlspecialchars($student['classno']) ?> &middot; Section <?= htmlspecialchars($sectionName) ?> &middot; CNIC: <?= htmlspecialchars($student['cnic']) ?></small>

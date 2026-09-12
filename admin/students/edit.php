@@ -1,5 +1,5 @@
 <?php
-include('database/db.php');
+include('./database/db.php');
 
 $id = $_GET['id'] ?? null;
 
@@ -7,13 +7,14 @@ if (!$id) {
     die("No student ID provided.");
 }
 
-$stmt = $conn->prepare("SELECT * FROM students WHERE id = $id");
+$stmt = $conn->prepare("SELECT * FROM students WHERE id = ?");
+$stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();
 $student = $result->fetch_assoc();
 
 if (!$student) {
-    echo ("Student not found.");
+    die("Student not found.");
 }
 ?>
 
@@ -22,7 +23,7 @@ if (!$student) {
         <div class="card-body p-4">
             <h3 class="mb-4">Edit Student</h3>
 
-            <form method="POST" action="./database/requests.php">
+            <form method="POST" action="/Website/SMS/database/requests.php" enctype="multipart/form-data">
                 <input type="hidden" name="id" value="<?= htmlspecialchars($student['id']) ?>">
 
                 <h5 class="mt-2 mb-3 text-primary">Student Information</h5>
@@ -69,6 +70,11 @@ if (!$student) {
 
                 <div class="mb-3">
                     <label for="student_photo" class="form-label">Student Photo</label>
+                    <?php if (!empty($student['pic'])): ?>
+                        <div class="mb-2">
+                            <img src="/Website/SMS/assets/uploads/students/<?= htmlspecialchars($student['pic']) ?>" style="width: 80px; height: 80px; object-fit: cover;" class="rounded">
+                        </div>
+                    <?php endif; ?>
                     <input type="file" class="form-control" id="student_photo" name="student_photo" accept="image/*">
                     <small class="text-muted">Leave empty to keep the current photo.</small>
                 </div>
@@ -79,8 +85,8 @@ if (!$student) {
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label for="class" class="form-label">Class Applying For</label>
-                        <!-- NEEDS class.php code to pre-select current class (classno = <?= htmlspecialchars($student['classno']) ?>) -->
-                        <?php include(__DIR__ . '/class.php'); ?>
+                        <?php $currentClass = $student['classno']; ?>
+                        <?php include('class.php'); ?>
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="academic_year" class="form-label">Academic Year</label>

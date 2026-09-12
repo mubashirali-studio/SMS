@@ -3,7 +3,7 @@
         <div class="card-body p-4">
             <h3 class="mb-4">Add Teacher</h3>
 
-            <form method="POST" action="./database/requests.php" enctype="multipart/form-data">
+            <form method="POST" action="/Website/SMS/database/requests.php" enctype="multipart/form-data">
 
                 <h5 class="mt-2 mb-3 text-primary">Personal Information</h5>
                 <div class="row">

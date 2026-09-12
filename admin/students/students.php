@@ -26,22 +26,37 @@ if ($sectionFilter) {
 <div class="table-responsive">
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>DOB</th>
-                <th>Gender</th>
-                <th>CNIC</th>
-                <th>Class No</th>
-                <th>Contact</th>
-                <th>Address</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($students as $student): ?>
+    <tr>
+        <th>ID</th>
+        <th>Photo</th>
+        <th>Name</th>
+        <th>DOB</th>
+        <th>Gender</th>
+        <th>CNIC</th>
+        <th>Class No</th>
+        <th>Contact</th>
+        <th>Address</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+<tbody>
+    <?php foreach ($students as $student): ?>
                 <tr>
                     <td><?= htmlspecialchars($student['id']) ?></td>
+                    <td>
+                        <?php
+                        $photoPath = __DIR__ . '/../../assets/uploads/students/' . $student['pic'];
+                        if (!empty($student['pic']) && file_exists($photoPath)):
+                        ?>
+                            <img src="/Website/SMS/assets/uploads/students/<?= htmlspecialchars($student['pic']) ?>" 
+                                class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                        <?php else: ?>
+                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                style="width: 40px; height: 40px; font-size: 0.9rem;">
+                                <?= strtoupper(substr($student['name'], 0, 1)) ?>
+                            </div>
+                        <?php endif; ?>
+                    </td>
                     <td><?= htmlspecialchars($student['name']) ?></td>
                     <td><?= htmlspecialchars($student['dob']) ?></td>
                     <td><?= htmlspecialchars($student['gender']) ?></td>

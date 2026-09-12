@@ -3,7 +3,7 @@
         <div class="card-body p-4">
             <h3 class="mb-4">Student Admission Form</h3>
 
-            <form method="POST" action="./database/requests.php">
+            <form method="POST" action="/Website/SMS/database/requests.php" enctype="multipart/form-data">
 
                 <h5 class="mt-2 mb-3 text-primary">Student Information</h5>
                 <div class="row">
@@ -61,10 +61,7 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label for="class" class="form-label">Class Applying For</label>
-                        <?php 
-                            include('class.php');
-                        ?>
-                            
+                        <?php include('class.php'); ?>
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="academic_year" class="form-label">Academic Year</label>
@@ -123,7 +120,7 @@
                 </div>
 
                 <div class="d-flex gap-2 mt-4">
-                    <button href = "./students.php" type="submit" name="save_std" class="btn btn-primary">Save Student</button>
+                    <button type="submit" name="save_std" class="btn btn-primary">Save Student</button>
                     <a href="?students=true" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>

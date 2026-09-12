@@ -13,22 +13,34 @@ $teachers = $stmt->fetch_all(MYSQLI_ASSOC);
 <div class="table-responsive">
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Gender</th>
-                <th>CNIC</th>
-                <th>Qualification</th>
-                <th>Specialization</th>
-                <th>Contact</th>
-                <th>Joining Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($teachers as $teacher): ?>
+    <tr>
+        <th>ID</th>
+        <th>Photo</th>
+        <th>Name</th>
+        <th>Gender</th>
+        <th>CNIC</th>
+        <th>Qualification</th>
+        <th>Specialization</th>
+        <th>Contact</th>
+        <th>Joining Date</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+<tbody>
+    <?php foreach ($teachers as $teacher): ?>
                 <tr>
                     <td><?= htmlspecialchars($teacher['id']) ?></td>
+                    <td>
+                        <?php if (!empty($teacher['photo'])): ?>
+                            <img src="/Website/SMS/assets/uploads/teachers/<?= htmlspecialchars($teacher['photo']) ?>" 
+                                class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                        <?php else: ?>
+                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                style="width: 40px; height: 40px; font-size: 0.9rem;">
+                                <?= strtoupper(substr($teacher['name'], 0, 1)) ?>
+                            </div>
+                        <?php endif; ?>
+                    </td>
                     <td><?= htmlspecialchars($teacher['name']) ?></td>
                     <td><?= htmlspecialchars($teacher['gender']) ?></td>
                     <td><?= htmlspecialchars($teacher['cnic']) ?></td>

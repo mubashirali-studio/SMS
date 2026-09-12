@@ -7,7 +7,6 @@ if (isset($_POST["save_std"])) {
     $blood_group = $_POST['blood_group'];
     $cnic = $_POST['b_form_no'];
     $religion = $_POST['religion'];
-    $student_photo = $_POST['student_photo'];
     $class = $_POST['class'];
     $academic_year = $_POST['academic_year'];
     $admission_date = $_POST['admission_date'];
@@ -20,7 +19,12 @@ if (isset($_POST["save_std"])) {
     $emergency_contact = $_POST['emergency_contact'];
     $address = $_POST['address'];
 
-																
+    $student_photo = "";
+    if (isset($_FILES['student_photo']) && $_FILES['student_photo']['error'] === 0) {
+        $student_photo = time() . '_' . $_FILES['student_photo']['name'];
+        $target = __DIR__ . '/../assets/uploads/students/' . $student_photo;
+        move_uploaded_file($_FILES['student_photo']['tmp_name'], $target);
+    }
 
     $student = $conn->prepare("Insert into `students` 
             (`id`,`name`,`dob`, `gender`, `bloodgrp` ,`cnic`,`religion`,`pic`, `classno`, `acad-year` , `add-date`,`pre-scl`,`father-name`, `mother-name`, `gurd-cnic` , `gurd-ocp`,`prim-no`,`emg-no`, `address`)
@@ -34,7 +38,8 @@ if (isset($_POST["save_std"])) {
     } else {
         echo "Failed To Add Student";
     }
-}else if (isset($_POST["update_std"])) {
+
+} else if (isset($_POST["update_std"])) {
     $id = $_POST['id'];
     $name = $_POST['name'];
     $dob = $_POST['dob'];
@@ -54,7 +59,17 @@ if (isset($_POST["save_std"])) {
     $emergency_contact = $_POST['emergency_contact'];
     $address = $_POST['address'];
 
+    // Only touch the photo field if a new file was actually uploaded
+    $photoSql = "";
+    if (isset($_FILES['student_photo']) && $_FILES['student_photo']['error'] === 0) {
+        $student_photo = time() . '_' . $_FILES['student_photo']['name'];
+        $target = __DIR__ . '/../assets/uploads/students/' . $student_photo;
+        move_uploaded_file($_FILES['student_photo']['tmp_name'], $target);
+        $photoSql = "`pic` = '$student_photo',";
+    }
+
     $student = $conn->prepare("UPDATE `students` SET
+            $photoSql
             `name` = '$name',
             `dob` = '$dob',
             `gender` = '$gender',
@@ -100,7 +115,6 @@ else if (isset($_POST["save_tch"])) {
     $dob = $_POST['dob'];
     $gender = $_POST['gender'];
     $cnic = $_POST['cnic'];
-    $photo = $_POST['photo'];
     $qualification = $_POST['qualification'];
     $specialization = $_POST['specialization'];
     $experience_years = $_POST['experience_years'];
@@ -110,7 +124,12 @@ else if (isset($_POST["save_tch"])) {
     $emergency_contact = $_POST['emergency_contact'];
     $email = $_POST['email'];
     $address = $_POST['address'];
-																
+    $photo = "";
+    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === 0) {
+        $photo = time() . '_' . $_FILES['photo']['name'];
+        $target = __DIR__ . '/../assets/uploads/teachers/' . $photo;
+        move_uploaded_file($_FILES['photo']['tmp_name'], $target);
+    }
 
     $teacher = $conn->prepare("Insert into `teachers` 
             (`id`,`name`,`dob`, `gender`, `cnic` ,`photo`,`qualification`,`specialization`, `experience_years`, `joining_date` , `salary`,`contact`,`emergency_contact`, `email`, `address`)
@@ -124,7 +143,8 @@ else if (isset($_POST["save_tch"])) {
     } else {
         echo "Failed To Add Teacher";
     }
-    }else if (isset($_POST["update_tch"])) {
+
+} else if (isset($_POST["update_tch"])) {
     $id = $_POST['id'];
     $name = $_POST['name'];
     $dob = $_POST['dob'];
@@ -140,7 +160,16 @@ else if (isset($_POST["save_tch"])) {
     $email = $_POST['email'];
     $address = $_POST['address'];
 
+    $photoSql = "";
+    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === 0) {
+        $photo = time() . '_' . $_FILES['photo']['name'];
+        $target = __DIR__ . '/../assets/uploads/teachers/' . $photo;
+        move_uploaded_file($_FILES['photo']['tmp_name'], $target);
+        $photoSql = "`photo` = '$photo',";
+    }
+
     $teacher = $conn->prepare("UPDATE `teachers` SET
+            $photoSql
             `name` = '$name',
             `dob` = '$dob',
             `gender` = '$gender',
