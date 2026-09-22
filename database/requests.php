@@ -34,6 +34,17 @@ if (isset($_POST["save_std"])) {
     $student->insert_id;
 
     if ($result) {
+    $newStudentId = $conn->insert_id;
+
+    $admissionFee = $conn->prepare("Insert into `fees` 
+            (`id`,`student_id`,`fee_type`,`month`,`amount_due`,`amount_paid`,`due_date`,`paid_date`)
+            values(NULL, ?, 'Admission', ?, 5000, 0, ?, NULL);
+            ");
+    $currentMonth = date('F Y');
+    $today = date('Y-m-d');
+    $admissionFee->bind_param("iss", $newStudentId, $currentMonth, $today);
+    $admissionFee->execute();
+
         header("location: /Website/SMS/?students=true");
     } else {
         echo "Failed To Add Student";
@@ -220,6 +231,63 @@ else if (isset($_POST["save_tch"])) {
         header("location: /Website/SMS/?sections=true");
     } else {
         echo "Failed To Add Section";
+    }
+} else if (isset($_POST["save_fee"])) {
+    $apply_to = $_POST['apply_to'];
+    $fee_type = $_POST['fee_type'];
+    $month = $_POST['month'];
+    $amount_due = $_POST['amount_due'];
+    $due_date = $_POST['due_date'];
+
+    if ($apply_to === 'student') {
+        $student_id = $_POST['student_id'];
+
+        $fee = $conn->prepare("Insert into `fees` 
+                (`id`,`student_id`,`fee_type`,`month`,`amount_due`,`amount_paid`,`due_date`,`paid_date`)
+                values(NULL, ?, ?, ?, ?, 0, ?, NULL);
+                ");
+        $fee->bind_param("issis", $student_id, $fee_type, $month, $amount_due, $due_date);
+        $fee->execute();
+
+    } else if ($apply_to === 'class') {
+        $classno = $_POST['classno'];
+        $students = $conn->query("SELECT id FROM students WHERE classno = $classno");
+
+        foreach ($students as $s) {
+            $fee = $conn->prepare("Insert into `fees` 
+                    (`id`,`student_id`,`fee_type`,`month`,`amount_due`,`amount_paid`,`due_date`,`paid_date`)
+                    values(NULL, ?, ?, ?, ?, 0, ?, NULL);
+                    ");
+            $fee->bind_param("issis", $s['id'], $fee_type, $month, $amount_due, $due_date);
+            $fee->execute();
+        }
+
+    } else if ($apply_to === 'school') {
+        $students = $conn->query("SELECT id FROM students");
+
+        foreach ($students as $s) {
+            $fee = $conn->prepare("Insert into `fees` 
+                    (`id`,`student_id`,`fee_type`,`month`,`amount_due`,`amount_paid`,`due_date`,`paid_date`)
+                    values(NULL, ?, ?, ?, ?, 0, ?, NULL);
+                    ");
+            $fee->bind_param("issis", $s['id'], $fee_type, $month, $amount_due, $due_date);
+            $fee->execute();
+        }
+    }
+
+    header("location: /Website/SMS/?fees=true");
+} else if (isset($_POST["record_payment"])) {
+    $fee_id = $_POST['fee_id'];
+    $payment_amount = $_POST['payment_amount'];
+
+    $stmt = $conn->prepare("UPDATE fees SET amount_paid = amount_paid + $payment_amount, paid_date = CURDATE() WHERE id = $fee_id");
+    // $stmt->bind_param("di", $payment_amount, $fee_id);
+    $result = $stmt->execute();
+
+    if ($result) {
+        header("location: /Website/SMS/?fees=true");
+    } else {
+        echo "Failed To Record Payment";
     }
 }
 ?>

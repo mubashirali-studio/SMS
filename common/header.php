@@ -44,12 +44,13 @@ include('./assets/bootstrap.php');
     <!-- Sidebar -->
     <div class="bg-light p-3" style="width: 220px; min-height: 100vh;">
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link" href="#">Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="?dashboard=true">Dashboard</a></li>
             <li class="nav-item"><a class="nav-link" href="?students=true">Students</a></li>
             <li class="nav-item"><a class="nav-link" href="?teachers=true">Teachers</a></li>
             <li class="nav-item"><a class="nav-link" href="?classes=true">Classes</a></li>
             <li class="nav-item"><a class="nav-link" href="?sections=true">Sections</a></li>
             <li class="nav-item"><a class="nav-link" href="?subjects=true">Subjects</a></li>
+            <li class="nav-item"><a class="nav-link" href="?fees=true">Fees</a></li>
         </ul>
     </div>
 <?php } ?>

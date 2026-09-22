@@ -103,7 +103,30 @@
             {
                 include('./admin/sections/delsec.php');
             }
-
+    else if(isset($_GET['fees']))
+        {
+            include('./admin/fees/fees.php');
+        }
+    else if(isset($_GET['addfee']))
+            {
+                include('./admin/fees/addfee.php');
+            }
+    else if(isset($_GET['payfee']) && isset($_GET['id']))
+            {
+                include('./admin/fees/payfee.php');
+            }
+    else if(isset($_GET['delfee']) && isset($_GET['id']))
+            {
+                include('./admin/fees/delfee.php');
+            }
+    else if(isset($_GET['genfees']))
+        {
+            include('./admin/fees/genfees.php');
+        }
+    else if(isset($_GET['dashboard']))
+        {
+            include('./admin/dashboard.php');
+        }
 
     include('./common/footer.php');
     ?>
