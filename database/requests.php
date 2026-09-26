@@ -289,5 +289,108 @@ else if (isset($_POST["save_tch"])) {
     } else {
         echo "Failed To Record Payment";
     }
+} else if (isset($_POST['save_slot'])) {
+
+    $classno = (int) $_POST['classno'];
+    $day     = (int) $_POST['day_no'];
+    $period  = (int) $_POST['period_no'];
+    $subject = (int) $_POST['subject_id'];
+    $teacher = (int) $_POST['teacher_id'];
+
+    $back = "/Website/SMS/index.php?timetable=true&classno=" . $classno;
+
+    // 1. check if this teacher is already busy in another class at this day and period
+    $sql = "SELECT class.name FROM timetable
+            JOIN class ON class.id = timetable.classno
+            WHERE timetable.teacher_id = $teacher
+            AND timetable.day_no = $day
+            AND timetable.period_no = $period
+            AND timetable.classno != $classno";
+    $result = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        header("Location: " . $back . "&error=clash&with=" . urlencode("Class " . $row['name']));
+        exit;
+    }
+
+    // 2. check if this box already has data
+    $check = mysqli_query($conn, "SELECT id FROM timetable
+                                  WHERE classno = $classno AND day_no = $day AND period_no = $period");
+
+    if (mysqli_num_rows($check) > 0) {
+        // box already filled, so update it
+        mysqli_query($conn, "UPDATE timetable SET subject_id = $subject, teacher_id = $teacher
+                             WHERE classno = $classno AND day_no = $day AND period_no = $period");
+    } else {
+        // empty box, so insert
+        mysqli_query($conn, "INSERT INTO timetable (classno, day_no, period_no, subject_id, teacher_id)
+                             VALUES ($classno, $day, $period, $subject, $teacher)");
+    }
+
+    header("Location: " . $back . "&msg=saved");
+    exit;
+}
+else if (isset($_POST['clear_slot'])) {
+
+    $classno = (int) $_POST['classno'];
+    $day     = (int) $_POST['day_no'];
+    $period  = (int) $_POST['period_no'];
+
+    mysqli_query($conn, "DELETE FROM timetable
+                         WHERE classno = $classno AND day_no = $day AND period_no = $period");
+
+    header("Location: /Website/SMS/index.php?timetable=true&classno=" . $classno . "&msg=cleared");
+    exit;
+} else if (isset($_POST['assign_attendance'])) {
+
+    $classno    = (int) $_POST['classno'];
+    $section_id = (int) $_POST['section_id'];
+    $teacher_id = (int) $_POST['teacher_id'];
+
+    $check = mysqli_query($conn, "SELECT id FROM attendance_assignment
+                                  WHERE classno = $classno AND section_id = $section_id");
+
+    if (mysqli_num_rows($check) > 0) {
+        mysqli_query($conn, "UPDATE attendance_assignment SET teacher_id = $teacher_id
+                             WHERE classno = $classno AND section_id = $section_id");
+    } else {
+        mysqli_query($conn, "INSERT INTO attendance_assignment (classno, section_id, teacher_id)
+                             VALUES ($classno, $section_id, $teacher_id)");
+    }
+
+    header("Location: /Website/SMS/index.php?attendance=true&assign=true&msg=assigned");
+    exit;
+}
+else if (isset($_POST['save_attendance'])) {
+
+    $classno    = (int) $_POST['classno'];
+    $section_id = (int) $_POST['section_id'];
+    $teacher_id = (int) $_SESSION['teacher_id'];
+    $today      = date('Y-m-d');
+
+    foreach ($_POST['status'] as $student_id => $status) {
+
+        $student_id = (int) $student_id;
+
+        // status comes from a fixed set of radio values, but check it anyway
+        if ($status != 'present' && $status != 'absent' && $status != 'leave') {
+            continue;
+        }
+
+        $check = mysqli_query($conn, "SELECT id FROM attendance
+                                      WHERE student_id = $student_id AND att_date = '$today'");
+
+        if (mysqli_num_rows($check) > 0) {
+            mysqli_query($conn, "UPDATE attendance SET status = '$status'
+                                 WHERE student_id = $student_id AND att_date = '$today'");
+        } else {
+            mysqli_query($conn, "INSERT INTO attendance (student_id, classno, section_id, att_date, status, marked_by)
+                                 VALUES ($student_id, $classno, $section_id, '$today', '$status', $teacher_id)");
+        }
+    }
+
+    header("Location: /Website/SMS/index.php?attendance=true&classno=$classno&section_id=$section_id&msg=saved");
+    exit;
 }
 ?>

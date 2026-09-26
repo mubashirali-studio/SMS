@@ -51,6 +51,9 @@ include('./assets/bootstrap.php');
             <li class="nav-item"><a class="nav-link" href="?sections=true">Sections</a></li>
             <li class="nav-item"><a class="nav-link" href="?subjects=true">Subjects</a></li>
             <li class="nav-item"><a class="nav-link" href="?fees=true">Fees</a></li>
+            <li class="nav-item"><a class="nav-link" href="?timetable=true">Timetable</a></li>
+            <li class="nav-item"><a class="nav-link" href="?attendance=true&assign=true">Assign Attendance</a></li>
+            <li class="nav-item"><a class="nav-link" href="?attendance=true">Take Attendance</a></li>
         </ul>
     </div>
 <?php } ?>

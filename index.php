@@ -127,6 +127,41 @@
         {
             include('./admin/dashboard.php');
         }
+    else if (isset($_GET['timetable'])) 
+    {
+        if (isset($_GET['classno'])) 
+        {
+            include ('./admin/timetable/manage.php');
+        } else 
+        {
+            include ('./admin/timetable/timetable.php');
+        }
+    }
+    else if (isset($_GET['attendance'])) 
+    {
+        if (isset($_GET['setteacher'])) {
+            $_SESSION['teacher_id'] = (int) $_GET['setteacher'];
+            header("Location: /Website/SMS/index.php?attendance=true");
+            exit;
+        }
+        else if (isset($_GET['logout'])) {
+            unset($_SESSION['teacher_id']);
+            header("Location: /Website/SMS/index.php?attendance=true");
+            exit;
+        }
+        else if (isset($_GET['assign'])) {
+            include __DIR__ . '/admin/attendance/assign.php';
+        }
+        else if (isset($_GET['classno']) && isset($_GET['section_id'])) {
+            include __DIR__ . '/admin/attendance/mark.php';
+        }
+        else if (isset($_SESSION['teacher_id'])) {
+            include __DIR__ . '/admin/attendance/dashboard.php';
+        }
+        else {
+            include __DIR__ . '/admin/attendance/teacher-login.php';
+        }
+    }
 
     include('./common/footer.php');
     ?>
