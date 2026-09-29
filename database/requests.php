@@ -371,7 +371,7 @@ else if (isset($_POST['save_attendance'])) {
 
     foreach ($_POST['status'] as $student_id => $status) {
 
-        $student_id = (int) $student_id;
+            $teacher_id = (int) $_POST['teacher_id']; // TEMP: back to (int) $_SESSION['teacher_id'] after login
 
         // status comes from a fixed set of radio values, but check it anyway
         if ($status != 'present' && $status != 'absent' && $status != 'leave') {
@@ -390,7 +390,7 @@ else if (isset($_POST['save_attendance'])) {
         }
     }
 
-    header("Location: /Website/SMS/index.php?attendance=true&classno=$classno&section_id=$section_id&msg=saved");
+        header("Location: /Website/SMS/index.php?teacher_attendance=true&classno=$classno&section_id=$section_id&msg=saved");
     exit;
 }
 ?>

@@ -151,6 +151,7 @@
         }
         else if (isset($_GET['assign'])) {
             include __DIR__ . '/admin/attendance/assign.php';
+
         }
         else if (isset($_GET['classno']) && isset($_GET['section_id'])) {
             include __DIR__ . '/admin/attendance/mark.php';
@@ -162,6 +163,24 @@
             include __DIR__ . '/admin/attendance/teacher-login.php';
         }
     }
+    else if (isset($_GET['teacher_profile'])) {
+            include __DIR__ . '/teacher/profile.php';
+        }
+    else if (isset($_GET['teacher_timetable'])) {
+            include __DIR__ . '/teacher/timetable.php';
+        }
+    else if (isset($_GET['teacher_attendance'])) {
+            include __DIR__ . '/teacher/attendance.php';
+        }
+    else if (isset($_GET['student_profile'])) {
+            include __DIR__ . '/student/profile.php';
+        }
+    else if (isset($_GET['student_timetable'])) {
+            include __DIR__ . '/student/timetable.php';
+        }
+    else if (isset($_GET['student_fees'])) {
+            include __DIR__ . '/student/fees.php';
+        }
 
     include('./common/footer.php');
     ?>

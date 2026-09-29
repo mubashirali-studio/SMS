@@ -54,6 +54,12 @@ include('./assets/bootstrap.php');
             <li class="nav-item"><a class="nav-link" href="?timetable=true">Timetable</a></li>
             <li class="nav-item"><a class="nav-link" href="?attendance=true&assign=true">Assign Attendance</a></li>
             <li class="nav-item"><a class="nav-link" href="?attendance=true">Take Attendance</a></li>
+            <li class="nav-item"><a class="nav-link" href="?teacher_profile=true">My Profile</a></li>
+            <li class="nav-item"><a class="nav-link" href="?teacher_timetable=true">My Timetable</a></li>
+            <li class="nav-item"><a class="nav-link" href="?teacher_attendance=true">Take Attendance</a></li>
+            <li class="nav-item"><a class="nav-link" href="?student_profile=true">Student Profile</a></li>
+            <li class="nav-item"><a class="nav-link" href="?student_timetable=true">Student Timetable</a></li>
+            <li class="nav-item"><a class="nav-link" href="?student_fees=true">Account Book</a></li>
         </ul>
     </div>
 <?php } ?>
