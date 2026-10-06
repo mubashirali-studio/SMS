@@ -1,7 +1,7 @@
 <?php
 include_once __DIR__ . '/../database/db.php';
 
-$student_id = 1; // TEMP: replace with (int) $_SESSION['student_id'] after login
+$student_id = 34; // TEMP: replace with (int) $_SESSION['student_id'] after login
 
 // student name for the heading
 $result = mysqli_query($conn, "SELECT name FROM students WHERE id = $student_id");

@@ -392,5 +392,131 @@ else if (isset($_POST['save_attendance'])) {
 
         header("Location: /Website/SMS/index.php?teacher_attendance=true&classno=$classno&section_id=$section_id&msg=saved");
     exit;
+} else if (isset($_POST['submit_admission'])) {
+
+    $name                = mysqli_real_escape_string($conn, $_POST['name']);
+    $dob                 = $_POST['dob'];
+    $gender              = mysqli_real_escape_string($conn, $_POST['gender']);
+    $blood_group         = mysqli_real_escape_string($conn, $_POST['blood_group']);
+    $b_form_no           = mysqli_real_escape_string($conn, $_POST['b_form_no']);
+    $religion            = mysqli_real_escape_string($conn, $_POST['religion']);
+    $classno             = (int) $_POST['class'];
+    $academic_year       = mysqli_real_escape_string($conn, $_POST['academic_year']);
+    $admission_date      = $_POST['admission_date'];
+    $previous_school     = mysqli_real_escape_string($conn, $_POST['previous_school']);
+    $father_name         = mysqli_real_escape_string($conn, $_POST['father_name']);
+    $mother_name         = mysqli_real_escape_string($conn, $_POST['mother_name']);
+    $guardian_cnic       = mysqli_real_escape_string($conn, $_POST['guardian_cnic']);
+    $guardian_occupation = mysqli_real_escape_string($conn, $_POST['guardian_occupation']);
+    $contact             = mysqli_real_escape_string($conn, $_POST['contact']);
+    $emergency_contact   = mysqli_real_escape_string($conn, $_POST['emergency_contact']);
+    $address             = mysqli_real_escape_string($conn, $_POST['address']);
+    $email               = mysqli_real_escape_string($conn, $_POST['email']);
+    $password            = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+    // stop duplicate applications with the same email
+    $check = mysqli_query($conn, "SELECT id FROM admission_requests WHERE email = '$email'");
+    if (mysqli_num_rows($check) > 0) {
+        header("Location: /Website/SMS/admission.php?error=email");
+        exit;
+    }
+
+    // photo upload
+    $photo_name = '';
+    if (isset($_FILES['student_photo']) && $_FILES['student_photo']['error'] == 0) {
+        $photo_name = time() . '_' . basename($_FILES['student_photo']['name']);
+        move_uploaded_file($_FILES['student_photo']['tmp_name'], __DIR__ . '/../assets/uploads/admission/' . $photo_name);
+    }
+
+    $sql = "INSERT INTO admission_requests
+            (name, dob, gender, blood_group, b_form_no, religion, photo, classno, academic_year, admission_date,
+             previous_school, father_name, mother_name, guardian_cnic, guardian_occupation, contact, emergency_contact,
+             address, email, password, status)
+            VALUES
+            ('$name', '$dob', '$gender', '$blood_group', '$b_form_no', '$religion', '$photo_name', $classno, '$academic_year', '$admission_date',
+             '$previous_school', '$father_name', '$mother_name', '$guardian_cnic', '$guardian_occupation', '$contact', '$emergency_contact',
+             '$address', '$email', '$password', 'pending')";
+    mysqli_query($conn, $sql);
+
+    header("Location: /Website/SMS/");
+    exit;
+}else if (isset($_POST['approve_admission'])) {
+
+    $request_id = (int) $_POST['request_id'];
+
+    // pull the full request
+    $result = mysqli_query($conn, "SELECT * FROM admission_requests WHERE id = $request_id");
+    $req = mysqli_fetch_assoc($result);
+
+    if (!$req) {
+        header("Location: /Website/SMS/index.php?admission=true&error=notfound");
+        exit;
+    }
+
+    // escape every text field before inserting
+    $name                = mysqli_real_escape_string($conn, $req['name']);
+    $dob                 = $req['dob'];
+    $gender              = mysqli_real_escape_string($conn, $req['gender']);
+    $bloodgrp            = mysqli_real_escape_string($conn, $req['blood_group']);
+    $cnic                = mysqli_real_escape_string($conn, $req['b_form_no']);
+    $religion            = mysqli_real_escape_string($conn, $req['religion']);
+    $pic                 = mysqli_real_escape_string($conn, $req['photo']);
+    $classno             = (int) $req['classno'];
+    $acad_year           = mysqli_real_escape_string($conn, $req['academic_year']);
+    $pre_scl             = mysqli_real_escape_string($conn, $req['previous_school']);
+    $add_date            = $req['admission_date'];
+    $father_name         = mysqli_real_escape_string($conn, $req['father_name']);
+    $mother_name         = mysqli_real_escape_string($conn, $req['mother_name']);
+    $gurd_cnic           = mysqli_real_escape_string($conn, $req['guardian_cnic']);
+    $gurd_ocp            = mysqli_real_escape_string($conn, $req['guardian_occupation']);
+    $prim_no             = mysqli_real_escape_string($conn, $req['contact']);
+    $emg_no              = mysqli_real_escape_string($conn, $req['emergency_contact']);
+    $address             = mysqli_real_escape_string($conn, $req['address']);
+    $email               = mysqli_real_escape_string($conn, $req['email']);
+    $password            = $req['password']; // already hashed when it was first saved
+
+    // move the photo from the admission uploads folder into the students uploads folder
+    if (!empty($pic)) {
+        $from = __DIR__ . '/../assets/uploads/admission/' . $pic;
+        $to   = __DIR__ . '/../assets/uploads/students/' . $pic;
+        if (file_exists($from)) {
+            copy($from, $to);
+        }
+    }
+
+    $sql = "INSERT INTO students
+            (name, dob, gender, bloodgrp, cnic, religion, pic, classno, `acad-year`, `pre-scl`, `add-date`,
+             `father-name`, `mother-name`, `gurd-cnic`, `gurd-ocp`, `prim-no`, `emg-no`, address, email, password)
+            VALUES
+            ('$name', '$dob', '$gender', '$bloodgrp', '$cnic', '$religion', '$pic', $classno, '$acad_year', '$pre_scl', '$add_date',
+             '$father_name', '$mother_name', '$gurd_cnic', '$gurd_ocp', '$prim_no', '$emg_no', '$address', '$email', '$password')";
+    mysqli_query($conn, $sql); // insert into students
+
+    $newStudentId = mysqli_insert_id($conn);
+
+    $currentMonth = date('F Y');
+    $today = date('Y-m-d');
+
+    $admissionFee = $conn->prepare("INSERT INTO `fees` 
+            (`id`,`student_id`,`fee_type`,`month`,`amount_due`,`amount_paid`,`due_date`,`paid_date`)
+            VALUES (NULL, ?, 'Admission', ?, 5000, 0, ?, NULL)");
+    $admissionFee->bind_param("iss", $newStudentId, $currentMonth, $today);
+    $admissionFee->execute();
+
+    // mark the request as handled so it drops off the pending list
+    mysqli_query($conn, "DELETE FROM admission_requests WHERE id = $request_id");
+
+    header("Location: /Website/SMS/index.php?admission=true&msg=added");
+    exit;
 }
+else if (isset($_POST['reject_admission'])) {
+
+    $request_id = (int) $_POST['request_id'];
+
+    mysqli_query($conn, "DELETE FROM admission_requests WHERE id = $request_id");
+
+    header("Location: /Website/SMS/index.php?admission=true&msg=rejected");
+    exit;
+}
+
 ?>

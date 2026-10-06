@@ -91,6 +91,20 @@ if (!empty($student['section_id'])) {
             <div class="col-md-8 mb-2"><small class="text-muted d-block">Address</small><?= htmlspecialchars($student['address']) ?></div>
         </div>
 
+        <hr>
+
+        <h6 class="text-primary text-uppercase mb-3 mt-3">Account Information</h6>
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <small class="text-muted d-block">Email</small>
+                <?= !empty($student['email']) ? htmlspecialchars($student['email']) : '<span class="text-muted">Not set</span>' ?>
+            </div>
+            <div class="col-md-6 mb-2">
+                <small class="text-muted d-block">Password</small>
+                <?= !empty($student['password']) ? '<span class="badge bg-success">Set</span>' : '<span class="badge bg-secondary">Not set</span>' ?>
+            </div>
+        </div>
+
     </div>
 
     <div class="card-footer d-flex gap-2">

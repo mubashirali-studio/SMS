@@ -144,6 +144,21 @@ if (!$student) {
                     <textarea class="form-control" id="address" name="address" rows="3" required><?= htmlspecialchars($student['address']) ?></textarea>
                 </div>
 
+                <hr class="my-4">
+
+                <h5 class="mb-3 text-primary">Account Information</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($student['email'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="password" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="password" name="password" minlength="6">
+                        <small class="text-muted">Leave blank to keep the current password.</small>
+                    </div>
+                </div>
+
                 <div class="d-flex gap-2 mt-4">
                     <button type="submit" name="update_std" class="btn btn-primary">Update Student</button>
                     <a href="?students=true" class="btn btn-secondary">Cancel</a>

@@ -4,11 +4,22 @@ include('database/db.php');
 $sectionFilter = $_GET['section'] ?? null;
 
 if ($sectionFilter) {
-    $stmt = $conn->prepare("SELECT * FROM students WHERE section_id = $sectionFilter ORDER BY id DESC");
+    $stmt = $conn->prepare("
+        SELECT students.*, sections.section_name
+        FROM students
+        LEFT JOIN sections ON sections.id = students.section_id
+        WHERE students.section_id = $sectionFilter
+        ORDER BY students.id DESC
+    ");
     $stmt->execute();
     $students = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 } else {
-    $stmt = $conn->query("SELECT * FROM students ORDER BY id DESC");
+    $stmt = $conn->query("
+        SELECT students.*, sections.section_name
+        FROM students
+        LEFT JOIN sections ON sections.id = students.section_id
+        ORDER BY students.id DESC
+    ");
     $students = $stmt->fetch_all(MYSQLI_ASSOC);
 }
 ?>
@@ -61,7 +72,10 @@ if ($sectionFilter) {
                     <td><?= htmlspecialchars($student['dob']) ?></td>
                     <td><?= htmlspecialchars($student['gender']) ?></td>
                     <td><?= htmlspecialchars($student['cnic']) ?></td>
-                    <td><?= htmlspecialchars($student['classno']) ?></td>
+                    <td>
+                        <?= htmlspecialchars($student['classno']) ?>
+                        (<?= !empty($student['section_name']) ? htmlspecialchars($student['section_name']) : 'N/A' ?>)
+                    </td>
                     <td><?= htmlspecialchars($student['prim-no']) ?></td>
                     <td><?= htmlspecialchars($student['address']) ?></td>
                     <td>

@@ -9,6 +9,11 @@
 <body>
     <?php
     session_start();
+    // show the public landing page when there are no query flags at all
+    if (empty($_GET)) {
+        include __DIR__ . '/landing.php';
+        exit;
+    }
     include('./common/header.php');
 
     if(isset($_GET['signup']) && !isset($_SESSION['user']['username']))
@@ -181,6 +186,17 @@
     else if (isset($_GET['student_fees'])) {
             include __DIR__ . '/student/fees.php';
         }
+    else if (isset($_GET['admission_view']) && isset($_GET['request_id'])) {
+            include __DIR__ . '/admin/admission/view.php';
+        }
+    else if (isset($_GET['admission'])) {
+            include __DIR__ . '/admin/admission/queries.php';
+        }
+    else if (isset($_GET['admission_form'])) {
+        include __DIR__ . '\admission.php';
+        }
+    
+
 
     include('./common/footer.php');
     ?>

@@ -30,16 +30,13 @@ include('./assets/bootstrap.php');
             <li class="nav-item">
             <a class="nav-link" href="?login=true">Log In</a>
             </li>
-            <li class="nav-item">
-            <a class="nav-link" href="?signup=true">Sign Up</a>
-            </li>
             <?php } ?>
 
         </ul>
     </div>
 </nav>
 
-<?php if(!isset($_GET['signup']) && !isset($_GET['login'])){ ?>
+<?php if(!isset($_GET['signup']) && !isset($_GET['login']) && !isset($_GET['admission_form']) ){ ?>
 <div class="d-flex">
     <!-- Sidebar -->
     <div class="bg-light p-3" style="width: 220px; min-height: 100vh;">
@@ -60,10 +57,10 @@ include('./assets/bootstrap.php');
             <li class="nav-item"><a class="nav-link" href="?student_profile=true">Student Profile</a></li>
             <li class="nav-item"><a class="nav-link" href="?student_timetable=true">Student Timetable</a></li>
             <li class="nav-item"><a class="nav-link" href="?student_fees=true">Account Book</a></li>
+            <li class="nav-item"><a class="nav-link" href="?admission=true">Admission Queries</a></li>
         </ul>
     </div>
 <?php } ?>
-    <!-- Main content -->
     <div class="p-4 flex-grow-1">
 </body>
 </html>
