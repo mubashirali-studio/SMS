@@ -9,6 +9,30 @@
 <body>
     <?php
     session_start();
+
+    if (isset($_GET['logout_user'])) {
+        session_unset();
+        session_destroy();
+        header("Location: /Website/SMS/index.php");
+        exit;
+    }
+
+    // block every admin-only page unless an admin is logged in
+    $admin_pages = array('students','addstd','view','edit','delete','save_std','assignsec',
+        'teachers','addtch','view_tch','edit_tch','delete_tch','subjects','addsub','save_sub',
+        'delsub','classes','sections','addsec','delsec','fees','addfee','payfee','delfee',
+        'genfees','dashboard','timetable','attendance','admission_view','admission');
+
+    foreach ($admin_pages as $page) {
+        if (isset($_GET[$page])) {
+            if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 'admin') {
+                header("Location: /Website/SMS/index.php?login=true");
+                exit;
+            }
+            break;
+        }
+    }
+
     // show the public landing page when there are no query flags at all
     if (empty($_GET)) {
         include __DIR__ . '/landing.php';
@@ -16,11 +40,11 @@
     }
     include('./common/header.php');
 
-    if(isset($_GET['signup']) && !isset($_SESSION['user']['username']))
+    if(isset($_GET['signup']) && !isset($_SESSION['user']))
             {
                 include('./auth/signup.php');
             }
-    else if(isset($_GET['login']) && !isset($_SESSION['user']['username']))
+    else if(isset($_GET['login']) && !isset($_SESSION['user']))
             {
                 include('./auth/login.php');
             }

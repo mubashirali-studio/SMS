@@ -1,7 +1,11 @@
 <?php
 include_once __DIR__ . '/../database/db.php';
 
-$student_id = 34; // TEMP: replace with (int) $_SESSION['student_id'] after login
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 'student') {
+    header("Location: /Website/SMS/index.php?login=true");
+    exit;
+}
+$student_id = (int) $_SESSION['user']['id'];
 
 // student name for the heading
 $result = mysqli_query($conn, "SELECT name FROM students WHERE id = $student_id");

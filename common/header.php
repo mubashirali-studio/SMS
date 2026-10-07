@@ -14,22 +14,24 @@ include('./assets/bootstrap.php');
     <a class="navbar-brand" href="./index.php">School Management System</a>
     <div class="collapse navbar-collapse">
         <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <span class="nav-link text-light">Hi, <?= htmlspecialchars($_SESSION['user_name']) ?></span>
-                <?php endif; ?>
-            </li>
 
-            <?php if(isset($_SESSION['user']['username'])) { ?>
-            <li class="nav-item"> 
-                <a class="nav-link" href="#">Logout</a>
-            </li>
-            <?php } ?>
-            
-            <?php if(!isset($_SESSION['user']['username'])) { ?>
-            <li class="nav-item">
-            <a class="nav-link" href="?login=true">Log In</a>
-            </li>
+            <?php if (isset($_SESSION['user'])) { ?>
+                <li class="nav-item">
+                    <span class="nav-link text-light">
+                        Welcome, <?= htmlspecialchars($_SESSION['user']['name']) ?>
+                        (<?= htmlspecialchars(ucfirst($_SESSION['user']['role'])) ?>)
+                    </span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?logout_user=true">Log Out</a>
+                </li>
+            <?php } else { ?>
+                <li class="nav-item">
+                    <a class="nav-link" href="?login=true">Log In</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?signup=true">Sign Up</a>
+                </li>
             <?php } ?>
 
         </ul>
@@ -41,23 +43,33 @@ include('./assets/bootstrap.php');
     <!-- Sidebar -->
     <div class="bg-light p-3" style="width: 220px; min-height: 100vh;">
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link" href="?dashboard=true">Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="?students=true">Students</a></li>
-            <li class="nav-item"><a class="nav-link" href="?teachers=true">Teachers</a></li>
-            <li class="nav-item"><a class="nav-link" href="?classes=true">Classes</a></li>
-            <li class="nav-item"><a class="nav-link" href="?sections=true">Sections</a></li>
-            <li class="nav-item"><a class="nav-link" href="?subjects=true">Subjects</a></li>
-            <li class="nav-item"><a class="nav-link" href="?fees=true">Fees</a></li>
-            <li class="nav-item"><a class="nav-link" href="?timetable=true">Timetable</a></li>
-            <li class="nav-item"><a class="nav-link" href="?attendance=true&assign=true">Assign Attendance</a></li>
-            <li class="nav-item"><a class="nav-link" href="?attendance=true">Take Attendance</a></li>
-            <li class="nav-item"><a class="nav-link" href="?teacher_profile=true">My Profile</a></li>
-            <li class="nav-item"><a class="nav-link" href="?teacher_timetable=true">My Timetable</a></li>
-            <li class="nav-item"><a class="nav-link" href="?teacher_attendance=true">Take Attendance</a></li>
-            <li class="nav-item"><a class="nav-link" href="?student_profile=true">Student Profile</a></li>
-            <li class="nav-item"><a class="nav-link" href="?student_timetable=true">Student Timetable</a></li>
-            <li class="nav-item"><a class="nav-link" href="?student_fees=true">Account Book</a></li>
-            <li class="nav-item"><a class="nav-link" href="?admission=true">Admission Queries</a></li>
+
+            <?php
+            $role = $_SESSION['user']['role'] ?? null;
+
+            if ($role == 'admin') { ?>
+                <li class="nav-item"><a class="nav-link" href="?dashboard=true">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="?students=true">Students</a></li>
+                <li class="nav-item"><a class="nav-link" href="?teachers=true">Teachers</a></li>
+                <li class="nav-item"><a class="nav-link" href="?classes=true">Classes</a></li>
+                <li class="nav-item"><a class="nav-link" href="?sections=true">Sections</a></li>
+                <li class="nav-item"><a class="nav-link" href="?subjects=true">Subjects</a></li>
+                <li class="nav-item"><a class="nav-link" href="?fees=true">Fees</a></li>
+                <li class="nav-item"><a class="nav-link" href="?timetable=true">Timetable</a></li>
+                <li class="nav-item"><a class="nav-link" href="?attendance=true&assign=true">Assign Attendance</a></li>
+                <li class="nav-item"><a class="nav-link" href="?admission=true">Admission Queries</a></li>
+            <?php }
+            else if ($role == 'teacher') { ?>
+                <li class="nav-item"><a class="nav-link" href="?teacher_profile=true">My Profile</a></li>
+                <li class="nav-item"><a class="nav-link" href="?teacher_timetable=true">My Timetable</a></li>
+                <li class="nav-item"><a class="nav-link" href="?teacher_attendance=true">Take Attendance</a></li>
+            <?php }
+            else if ($role == 'student') { ?>
+                <li class="nav-item"><a class="nav-link" href="?student_profile=true">My Profile</a></li>
+                <li class="nav-item"><a class="nav-link" href="?student_timetable=true">My Timetable</a></li>
+                <li class="nav-item"><a class="nav-link" href="?student_fees=true">Account Book</a></li>
+            <?php } ?>
+
         </ul>
     </div>
 <?php } ?>

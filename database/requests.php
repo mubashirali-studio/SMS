@@ -134,6 +134,7 @@ else if (isset($_POST["save_tch"])) {
     $contact = $_POST['contact'];
     $emergency_contact = $_POST['emergency_contact'];
     $email = $_POST['email'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $address = $_POST['address'];
     $photo = "";
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === 0) {
@@ -143,8 +144,8 @@ else if (isset($_POST["save_tch"])) {
     }
 
     $teacher = $conn->prepare("Insert into `teachers` 
-            (`id`,`name`,`dob`, `gender`, `cnic` ,`photo`,`qualification`,`specialization`, `experience_years`, `joining_date` , `salary`,`contact`,`emergency_contact`, `email`, `address`)
-            values(NULL, '$name' , '$dob' , '$gender' , '$cnic', '$photo' , '$qualification' , '$specialization' , '$experience_years', '$joining_date' , '$salary' , '$contact' , '$emergency_contact', '$email' , '$address');
+            (`id`,`name`,`dob`, `gender`, `cnic` ,`photo`,`qualification`,`specialization`, `experience_years`, `joining_date` , `salary`,`contact`,`emergency_contact`, `email`, `password`, `address`)
+            values(NULL, '$name' , '$dob' , '$gender' , '$cnic', '$photo' , '$qualification' , '$specialization' , '$experience_years', '$joining_date' , '$salary' , '$contact' , '$emergency_contact', '$email' , '$password' , '$address');
             ");
     $result = $teacher->execute();
     $teacher->insert_id;
@@ -371,7 +372,7 @@ else if (isset($_POST['save_attendance'])) {
 
     foreach ($_POST['status'] as $student_id => $status) {
 
-            $teacher_id = (int) $_POST['teacher_id']; // TEMP: back to (int) $_SESSION['teacher_id'] after login
+        $teacher_id = (int) $_SESSION['user']['id'];
 
         // status comes from a fixed set of radio values, but check it anyway
         if ($status != 'present' && $status != 'absent' && $status != 'leave') {
@@ -518,5 +519,64 @@ else if (isset($_POST['reject_admission'])) {
     header("Location: /Website/SMS/index.php?admission=true&msg=rejected");
     exit;
 }
+else if (isset($_POST['login_user'])) {
 
+    $email    = mysqli_real_escape_string($conn, $_POST['email']);
+    $password = $_POST['password'];
+
+    // 1. check admins first
+    $result = mysqli_query($conn, "SELECT * FROM admins WHERE email = '$email'");
+    $user = mysqli_fetch_assoc($result);
+    $role = 'admin';
+
+    // 2. not an admin, check teachers
+    if (!$user) {
+        $result = mysqli_query($conn, "SELECT * FROM teachers WHERE email = '$email'");
+        $user = mysqli_fetch_assoc($result);
+        $role = 'teacher';
+    }
+
+    // 3. not a teacher either, check students
+    if (!$user) {
+        $result = mysqli_query($conn, "SELECT * FROM students WHERE email = '$email'");
+        $user = mysqli_fetch_assoc($result);
+        $role = 'student';
+    }
+
+    // not found anywhere, or that account has no password set
+    if (!$user || empty($user['password'])) {
+        header("Location: /Website/SMS/index.php?login=true&error=1");
+        exit;
+    }
+
+    // check the password
+    if (!password_verify($password, $user['password'])) {
+        header("Location: /Website/SMS/index.php?login=true&error=1");
+        exit;
+    }
+
+    // success — store the session
+    $_SESSION['user'] = array(
+        'id'   => $user['id'],
+        'name' => $user['name'],
+        'role' => $role
+    );
+
+    if ($role == 'admin') {
+        header("Location: /Website/SMS/index.php?dashboard=true");
+    } else if ($role == 'teacher') {
+        $_SESSION['teacher_id'] = $user['id']; // keeps the attendance module working as is
+        header("Location: /Website/SMS/index.php?teacher_profile=true");
+    } else {
+        $_SESSION['student_id'] = $user['id'];
+        header("Location: /Website/SMS/index.php?student_profile=true");
+    }
+    exit;
+}
+else if (isset($_POST['logout_user']) || isset($_GET['logout_user'])) {
+    session_unset();
+    session_destroy();
+    header("Location: /Website/SMS/index.php");
+    exit;
+}
 ?>

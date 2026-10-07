@@ -1,7 +1,11 @@
 <?php
 include_once __DIR__ . '/../database/db.php';
 
-$teacher_id = 1; // TEMP: replace with (int) $_SESSION['teacher_id'] after login
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 'teacher') {
+    header("Location: /Website/SMS/index.php?login=true");
+    exit;
+}
+$teacher_id = (int) $_SESSION['user']['id'];
 $today = date('Y-m-d');
 
 // ---------- VIEW 2: student list of one class + section ----------
